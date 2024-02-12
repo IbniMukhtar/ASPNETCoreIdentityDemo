@@ -1,0 +1,115 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService authorizationService;
+@model ASPNETCoreIdentityDemo.Models.ViewModels.EditUserViewModel
+
+@{
+    ViewBag.Title = "Edit User";
+}
+
+<div class="row justify-content-center mb-4">
+    <h1>Edit User</h1>
+    <div class="col-12 col-md-6">
+        <form method="post" class="mt-2">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group  mt-2">
+                <label asp-for="Id" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-12">
+                    <input asp-for="Id" disabled class="form-control">
+                </div>
+            </div>
+            <div class="form-group  mt-2">
+                <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-12">
+                    <input asp-for="Email" class="form-control">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group  mt-2">
+                <label asp-for="FirstName" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-12">
+                    <input asp-for="FirstName" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group mt-2">
+                <label asp-for="LastName" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-12">
+                    <input asp-for="LastName" class="form-control">
+                </div>
+            </div>
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group justify-content-center  mt-2">
+                <div class="col-sm-12 ">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a asp-action="ListUsers" class="btn btn-primary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="row" style="margin-top:20px;">
+            <div class="col-12 mb-3 mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>User Roles</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Roles.Any())
+                        {
+                            foreach (var role in Model.Roles)
+                            {
+                                       <ul><li><h6 class="card-title text-info">@role</h6></li></ul>
+                            }
+                        }
+                        else
+                        {
+                            <h5 class="card-title">None at the moment</h5>
+                        }
+                    </div>
+                        @if ((await authorizationService.AuthorizeAsync(User, "EditRolePolicy")).Succeeded)
+                        {
+                          <div class="card-footer">
+                            <a asp-action="ManageUserRoles" asp-controller="Administration" style="width:auto" asp-route-UserId="@Model.Id"
+                               class="btn btn-primary">
+                                Manage Roles
+                            </a>
+                         </div>
+                        }
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>User Claims</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Claims.Any())
+                        {
+                            foreach (var claim in Model.Claims)
+                            {
+                                <ul><li><h6 class="card-title text-info">@claim</h6></li></ul>
+                            }
+                        }
+                        else
+                        {
+                            <h5 class="card-title">None at the moment</h5>
+                        }
+                    </div>
+                  @if ((await authorizationService.AuthorizeAsync(User, "EditRolePolicy")).Succeeded)
+                    {
+                        <div class="card-footer">
+                            <a asp-action="ManageUserClaims" asp-controller="Administration" asp-route-UserId="@Model.Id"
+                               style="width:auto" class="btn btn-primary">
+                                Manage Claims
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

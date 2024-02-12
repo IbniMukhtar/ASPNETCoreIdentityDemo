@@ -1,0 +1,137 @@
+﻿@using ASPNETCoreIdentityDemo.Models
+@model List<ApplicationUser>
+@{
+    ViewBag.Title = "Searched Users";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+<div class="mb-3" style="overflow:scroll;">
+    <h3>All Users :<b class="text-success">@Model.Count()</b></h3>
+    @if (Model.Any())
+    {
+        <div class="row justify-content-between">
+            <div class="col-md-6">
+                <a asp-action="Register" asp-controller="Account" class="btn btn-primary mb-3">
+                    Add New User
+                </a>
+            </div>
+            <div class="col-md-6 text-md-right p-4">
+                    @* <input type="search" id="form1" placeholder="Search..." class="form-control" />
+                    <label class="form-label visually-hidden" for="form1">Search</label>
+                    <div class="input-group-append">
+                        <a asp-action="Search" asp-controller="Administration" class="btn btn-primary" data-mdb-ripple-init>
+                            <i class="fa fa-search"></i>
+                        </a>
+                    </div> *@
+                    <a class="btn btn-primary" asp-action="ListUsers" asp-controller="Administration">Back</a>
+            </div>
+            
+        </div>
+        <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Email</td>
+                        <td>@user.FirstName</td>
+                        <td>@user.LastName</td>
+                        <td>
+                            <form>
+                                <a asp-action="EditUser" asp-controller="Administration"
+                                   asp-route-UserId="@user.Id" class="btn btn-primary">Edit</a>
+
+                                <span id="confirmDeleteSpan_@user.Id" style="display:none">
+                                    <span>Are you sure you want to Delete?</span>
+                                    <a asp-action="DeleteUser" asp-controller="Administration"
+                                       asp-route-UserId="@user.Id" class="btn btn-danger">Yes</a>
+                                    <a href="#" class="btn btn-primary" onclick="confirmDelete('@user.Id', false);return false;">No</a>
+                                </span>
+
+                                <span id="deleteSpan_@user.Id">
+                                    <a href="#" class="btn btn-danger" onclick="confirmDelete('@user.Id', true);return false;">Delete</a>
+                                </span>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            No Users Added Yet
+        </div>
+    }
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function confirmDelete(uniqueId, isTrue) {
+        var deleteSpan = 'deleteSpan_' + uniqueId;
+        var confirmDeleteSpan = 'confirmDeleteSpan_' + uniqueId;
+
+        if (isTrue) {
+            $('#' + deleteSpan).hide();
+            $('#' + confirmDeleteSpan).show();
+        } else {
+            $('#' + deleteSpan).show();
+            $('#' + confirmDeleteSpan).hide();
+        }
+        return false;
+    }
+
+    $(document).ready(function () {
+        var alertElement = $(".alert");
+
+        // Check if the alert has already been manually closed
+        if (!alertElement.hasClass("manual-close")) {
+            // Automatically close the alert after a delay
+            alertElement.delay(5000).slideUp(200, function () {
+                alertElement.alert('close');
+            });
+        }
+
+        // Handle manual closing through the close button
+        alertElement.on("close.bs.alert", function () {
+            console.log("Alert is being closed manually");
+            // Add any additional logic you may need before the alert is closed
+            alertElement.addClass("manual-close"); // Mark as manually closed
+        });
+
+        alertElement.on("closed.bs.alert", function () {
+            console.log("Alert is closed");
+            // Add any additional logic you may need after the alert is closed
+        });
+    });
+</script>
+
+
+
+
+
+@* @using ASPNETCoreIdentityDemo.Models
+@model List<ApplicationUser>
+
+<!-- Your existing view content -->
+
+<div id="userList">
+    @foreach (var user in Model)
+    {
+        <p>@user.UserName</p>
+        <!-- Add other user properties as needed -->
+    }
+</div> *@
