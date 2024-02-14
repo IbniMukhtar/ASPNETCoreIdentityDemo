@@ -9,76 +9,14 @@
             <p>@TempData["SuccessMessage"]</p>
         </div>
     }
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-vn+0rOgJHzGn8PP+1/wCC2aPxwV6vvxtLLcl6coM0qA6g3tjB8tKmf/mJw6pJhSGheYE8cV05K7E2E8eEiME+g==" crossorigin="anonymous" />
 
 @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
 {
- <h1 class="mb-4">Admin Dashboard</h1>
-    <div class="row">
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Total Users</h5>
-                    <p class="card-text">@ViewBag.UsersCount</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Roles</h5>
-                    <p class="card-text">@ViewBag.RolesCount</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <h5 class="card-title">New Orders</h5>
-                    <p class="card-text">25</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card bg-danger text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Pending Requests</h5>
-                    <p class="card-text">10</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Recent Activities</h5>
-                    <ul>
-                        <li>User logged in</li>
-                        <li>New order placed</li>
-                        <li>Product added to the catalog</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Monthly Sales Chart</h5>
-                    <!-- Add your chart or graph here -->
-                    <p>Chart goes here</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    @Html.Partial("_AdminDashPartial", (object)ViewBag);
 }
 else
 {
-
+    @Html.Partial("_UserDashPartial", (object)ViewBag);
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">

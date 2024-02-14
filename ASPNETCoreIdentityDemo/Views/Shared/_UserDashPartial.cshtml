@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+<h1 class="mb-4">User DashBoard</h1>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">User Profile</h5>
+                <p class="card-text"><i class="fas fa-user"></i> <span>@ViewBag.FirstName @ViewBag.LastName</span></p>
+                <p class="card-text"><i class="fas fa-envelope"></i> @User?.Identity?.Name</p>
+                <p class="card-text"><i class="fas fa-calendar-alt"></i> Joined on January 1, 2022</p>
+
+                @if (SignInManager.IsSignedIn(User) && User.IsInRole("User"))
+                {<p class="card-text"><i class="fas fa-calendar-alt"></i>User Active</p>}
+                else
+                {<p class="card-text"><i class="fas fa-calendar-alt"></i>User Account Not Active</p>}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Recent Activities</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">Updated profile information</li>
+                    <li class="list-group-item">
+                        <!-- Provide clear indication that 'Edit' action is available -->
+                        <a asp-action="EditUser" asp-controller="#"
+                           asp-route-UserId="@ViewBag.userId" class="btn btn-primary">Edit Profile</a>
+                    </li>
+                    <li class="list-group-item">Liked a post</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Monthly Activity</h5>
+                <p class="card-text">Visual representation of monthly activity</p>
+                <!-- Include a placeholder or interactive chart/graph for better user engagement -->
+                <div id="monthly-activity-chart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -3,7 +3,6 @@ using ASPNETCoreIdentityDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 namespace ASPNETCoreIdentityDemo.Controllers
 {
@@ -14,9 +13,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
 
         //Both UserManager and SignInManager services are injected into the AccountController using constructor injection
-        public DashBoardController(UserManager<ApplicationUser> userManager,
-                                 SignInManager<ApplicationUser> signInManager,
-                                 RoleManager<ApplicationRole> roleManager)
+        public DashBoardController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager,RoleManager<ApplicationRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -27,7 +24,6 @@ namespace ASPNETCoreIdentityDemo.Controllers
         {
             var userEmaill = HttpContext.Session.GetString("UserEmail");
             ViewBag.userId= HttpContext.Session.GetString("UserId");
-            var userEmail = TempData["data"] as string;
             if (userEmaill == null)
             {
                 ViewBag.UsersCount = await this.userManager.Users.CountAsync();

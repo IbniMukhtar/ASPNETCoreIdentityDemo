@@ -18,9 +18,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
 
         //Both UserManager and SignInManager services are injected into the AccountController using constructor injection
-        public AccountController(UserManager<ApplicationUser> userManager,
-                                 SignInManager<ApplicationUser> signInManager,
-                                 RoleManager<ApplicationRole> roleManager)
+        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager,RoleManager<ApplicationRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -105,14 +103,6 @@ namespace ASPNETCoreIdentityDemo.Controllers
                     var user = await this.userManager.FindByEmailAsync(model.Email);
                     if (user != null)
                     {
-                        /*  var dashboardData = new DashboardViewModel
-                          {
-                              UserEmail = user.Email,
-                              FirstName = user.FirstName,
-                              LastName = user.LastName,
-                              UsersCount = await this.userManager.Users.CountAsync(),
-                              RolesCount = await _roleManager.Roles.CountAsync()
-                          };*/
                         HttpContext.Session.SetString("UserEmail", user.Email);
                         HttpContext.Session.SetString("UserId", user.Id);
                         ViewBag.UserEmail = user.Email;
@@ -155,7 +145,14 @@ namespace ASPNETCoreIdentityDemo.Controllers
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
-            LoginViewModel loginViewModel = new LoginViewModel
+            // Check if the user is already signed in
+            if (User.Identity.IsAuthenticated)
+            {
+                // Redirect to the post-login action
+                return RedirectToAction("Login", "Account");
+            }
+
+            var loginViewModel = new LoginViewModel
             {
                 ReturnUrl = returnUrl,
                 ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
@@ -164,27 +161,35 @@ namespace ASPNETCoreIdentityDemo.Controllers
             if (remoteError != null)
             {
                 ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
-
                 return View("Login", loginViewModel);
             }
 
-            // Get the login information about the user from the external login provider
             var info = await signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
                 ModelState.AddModelError(string.Empty, "Error loading external login information.");
-
                 return View("Login", loginViewModel);
             }
 
-            // If the user already has a login (i.e., if there is a record in AspNetUserLogins table)
-            // then sign-in the user with this external login provider
             var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider,
                 info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
             if (signInResult.Succeeded)
             {
-                return LocalRedirect(returnUrl);
+                var email = User.Identity.Name;
+                var user = await userManager.FindByEmailAsync(email);
+                // Determine the role of the user
+                ViewBag.roles = await userManager.GetRolesAsync(user);
+                HttpContext.Session.SetString("UserEmail", user.Email);
+                HttpContext.Session.SetString("UserId", user.Id);
+                ViewBag.UserEmail = user.Email;
+                ViewBag.FirstName = user.FirstName;
+                ViewBag.LastName = user.LastName;
+                TempData["data"] = user.Email;
+                ViewBag.UsersCount = await this.userManager.Users.CountAsync();
+                ViewBag.RolesCount = await _roleManager.Roles.CountAsync();
+                return RedirectToAction("Index", "Dashboard");
+
             }
 
             // If there is no record in AspNetUserLogins table, the user may not have a local account
@@ -207,7 +212,10 @@ namespace ASPNETCoreIdentityDemo.Controllers
                             FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
                             LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
                         };
-
+                        if(user.LastName == null)
+                        {
+                            user.LastName = "";
+                        }
                         //This will create a new user into the AspNetUsers table without password
                         await userManager.CreateAsync(user);
                     }
