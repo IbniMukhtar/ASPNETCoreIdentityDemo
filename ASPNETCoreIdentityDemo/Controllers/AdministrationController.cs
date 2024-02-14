@@ -303,9 +303,16 @@ namespace ASPNETCoreIdentityDemo.Controllers
 
         [HttpGet]
         public IActionResult ListUsers()
-        {
-            var users = _userManager.Users;
-            return View(users);
+        { // Retrieve all users from your data source
+            IEnumerable<ApplicationUser> allUsers = _userManager.Users;
+
+            // Create an instance of ApplicationUser and set the AllUsers property
+            var model = new ApplicationUser
+            {
+                AllUsers = allUsers
+            };
+
+            return View(model);
         }
 
         [Authorize(Roles = "Admin,SuperAdmin")]

@@ -14,5 +14,6 @@ namespace ASPNETCoreIdentityDemo.Models
         [Required(ErrorMessage = "This Email field is required.")]
         [DataType(DataType.DateTime)]
         public DateTime DOB { get; set; }
+        public IEnumerable<ApplicationUser> AllUsers { get; set; }
     }
 }
