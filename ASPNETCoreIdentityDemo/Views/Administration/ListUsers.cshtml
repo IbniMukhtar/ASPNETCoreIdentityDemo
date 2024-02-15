@@ -1,5 +1,5 @@
-﻿@model ASPNETCoreIdentityDemo.Models.ApplicationUser
-@{
+﻿@model ASPNETCoreIdentityDemo.Models.ViewModels.UserListViewModel
+@{ 
     ViewBag.Title = "All Users";
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -13,8 +13,8 @@
 }
 
 <div class="mb-3">
-    <h3>All Users :<b class="text-success">@Model.AllUsers.Count()</b></h3>
-    @if (Model.AllUsers.Any())
+    <h3>All Users :<b class="text-success">@ViewBag.AllUsersCount</b></h3>
+    @if (Model.ApplicationUser.AllUsers.Any())
     {
         <div class="row justify-content-between">
             <div class="col-md-6">
@@ -38,7 +38,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-bordered">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Email</th>
@@ -48,7 +48,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in Model.AllUsers)
+                    @foreach (var user in Model.ApplicationUser.AllUsers)
                     {
                         <tr>
                             <td>@user.Email</td>
@@ -82,7 +82,12 @@
             No Users Added Yet
         </div>
     }
+    @Html.Partial("_Pagination", Model.Pagination);
 </div>
+
+
+
+
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

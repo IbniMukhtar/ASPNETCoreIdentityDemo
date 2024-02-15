@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 using System.Security.Claims;
 namespace ASPNETCoreIdentityDemo.Controllers
 {
@@ -302,18 +303,32 @@ namespace ASPNETCoreIdentityDemo.Controllers
         }
 
         [HttpGet]
-        public IActionResult ListUsers()
-        { // Retrieve all users from your data source
+        public IActionResult ListUsers(int page=1)
+        {
+            const int PageSize = 5;
+            if (page < 1)page = 1;
+           
+            // Retrieve all users from your data source
             IEnumerable<ApplicationUser> allUsers = _userManager.Users;
+            ViewBag.AllUsersCount= allUsers.Count();
 
-            // Create an instance of ApplicationUser and set the AllUsers property
-            var model = new ApplicationUser
+            int totalUsers = allUsers.Count();
+ 
+            var Pager = new PaginationViewModel(totalUsers, page, PageSize);
+
+            int pageSkip = (page - 1) * PageSize;
+            
+            var data = allUsers.OrderBy(u => u.Id).Skip(pageSkip).Take(PageSize).ToList();
+
+            var model = new UserListViewModel
             {
-                AllUsers = allUsers
+                ApplicationUser = new ApplicationUser { AllUsers = data },
+                Pagination = Pager
             };
 
             return View(model);
         }
+
 
         [Authorize(Roles = "Admin,SuperAdmin")]
         [HttpGet]

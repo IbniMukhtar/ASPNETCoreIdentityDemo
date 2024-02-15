@@ -15,5 +15,7 @@ namespace ASPNETCoreIdentityDemo.Models
         [DataType(DataType.DateTime)]
         public DateTime DOB { get; set; }
         public IEnumerable<ApplicationUser> AllUsers { get; set; }
+        public IEnumerable<ApplicationUser> Pagination {  get; set; }
+
     }
 }
