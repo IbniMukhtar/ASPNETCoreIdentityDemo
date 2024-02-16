@@ -13,7 +13,7 @@
 {
 
     <nav aria-label="..." class="d-flex justify-content-between pb-4 mb-2">
-        <div class="dropup-center dropup">
+   @*      <div class="dropup-center dropup">
             <button class="btn  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Rows per page
             </button>
@@ -22,14 +22,18 @@
                 <a class="dropdown-item" href="@Url.Action("ListUsers", "Administration", new { page = 1, pageSize = 10 })">10</a>
                 <a class="dropdown-item" href="@Url.Action("ListUsers", "Administration", new { page = 1, pageSize = 20 })">20</a>
             </ul>
+        </div> *@
+
+        <div class="input-group" style="width: 200px;">
+            <input type="number" id="pageSizeInput" class="form-control" placeholder="Rows per page" min="1" style="width: 60px;">
+            <div class="input-group-append">
+
+                <button class="btn btn-secondary" type="button" id="updatePageSizeBtn" style="padding: 8px;height: 38px;">
+                    <i class="fa fa-plus" style="padding:0px;"></i>
+                </button>
+            </div>
         </div>
 
-@*         <div class="input-group" style="width:200px;">
-            <input type="number" id="pageSizeInput" class="form-control" placeholder="Rows per page" min="1" style="width:80px;display:block">
-            <div class="input-group-append">
-                <button class="btn-secondary p-1" type="button" id="updatePageSizeBtn" style="width:40px;height:40px;display:block">+</button>
-            </div>
-        </div> *@
 
         <div class="d-flex justify-content-end">
             <!-- Align to the left -->
@@ -37,29 +41,30 @@
                 @if (Model.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="1">First</a>
+                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="1" asp-route-pageSize="@ViewBag.SelectedPageSize">First</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="@(Model.CurrentPage-1)">Prev</a>
+                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="@(Model.CurrentPage-1)" asp-route-pageSize="@ViewBag.SelectedPageSize">Prev</a>
                     </li>
                 }
                 @for (var pg = Model.StartPage; pg <= Model.EndPage; pg++)
                 {
                     <li class="page-item @(pg == Model.CurrentPage ? "active" : "")">
-                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="@pg">@pg</a>
+                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="@pg" asp-route-pageSize="@ViewBag.SelectedPageSize">@pg</a>
                     </li>
                 }
                 @if (Model.CurrentPage < Model.TotalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="@(Model.CurrentPage+1)">Next</a>
+                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="@(Model.CurrentPage+1)" asp-route-pageSize="@ViewBag.SelectedPageSize">Next</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="@Model.TotalPages">Last</a>
+                        <a class="page-link" asp-action="ListUsers" asp-controller="Administration" asp-route-page="@Model.TotalPages" asp-route-pageSize="@ViewBag.SelectedPageSize">Last</a>
                     </li>
                 }
             </ul>
         </div>
+
     </nav>
 }
 

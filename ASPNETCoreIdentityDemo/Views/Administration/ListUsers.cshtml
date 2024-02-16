@@ -92,7 +92,7 @@
 
 
 
-@* this is for dynamic rows selection in a page   
+@* this is for dynamic rows selection in a page  *@  
 <script>
     $(document).ready(function () {
         $('#updatePageSizeBtn').click(function () {
@@ -100,7 +100,7 @@
             window.location.href = '@Url.Action("ListUsers", "Administration")?page=1&pageSize=' + pageSize;
         });
     });
-</script> *@
+</script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function confirmDelete(uniqueId, isTrue) {

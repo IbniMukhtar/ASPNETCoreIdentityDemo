@@ -303,13 +303,21 @@ namespace ASPNETCoreIdentityDemo.Controllers
         }
 
         [HttpGet]
-        public IActionResult ListUsers(int page = 1, int pageSize = 5)
+        public IActionResult ListUsers(int page = 1, int? pageSize = null)
         {
             const int MaxPageSize = 50; // Limit the maximum page size to prevent abuse
+            int selectedPageSize = pageSize ?? 5; // If pageSize is null, use default value (5)
 
-            if (page < 1) page = 1;
-            if (pageSize < 1) pageSize = 1;
-            if (pageSize > MaxPageSize) pageSize = MaxPageSize;
+            if (page < 1)
+                page = 1;
+
+            if (selectedPageSize < 1)
+                selectedPageSize = 1;
+            else if (selectedPageSize > MaxPageSize)
+                selectedPageSize = MaxPageSize;
+
+            // Store the selected page size in ViewBag for use in the view
+            ViewBag.SelectedPageSize = selectedPageSize;
 
             // Retrieve all users from your data source
             IEnumerable<ApplicationUser> allUsers = _userManager.Users;
@@ -317,11 +325,12 @@ namespace ASPNETCoreIdentityDemo.Controllers
 
             int totalUsers = allUsers.Count();
 
-            var pager = new PaginationViewModel(totalUsers, page, pageSize);
+            var pager = new PaginationViewModel(totalUsers, page, selectedPageSize);
 
-            int pageSkip = (page - 1) * pageSize;
+            int pageSkip = (page - 1) * selectedPageSize;
 
-            var data = allUsers.OrderBy(u => u.Id).Skip(pageSkip).Take(pageSize).ToList();
+            // Adjust page size based on the filter
+            var data = allUsers.OrderBy(u => u.Id).Skip(pageSkip).Take(selectedPageSize).ToList();
 
             var model = new UserListViewModel
             {
@@ -331,6 +340,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
 
             return View(model);
         }
+
 
 
 
