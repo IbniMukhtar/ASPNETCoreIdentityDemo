@@ -7,7 +7,8 @@
         public int TotalItems { get; private set; }
         public int StartPage { get; private set; }
         public int EndPage { get; private set; }
-        public int TotalPages { get; private set; } 
+        public int TotalPages { get; private set; }
+       
         public PaginationViewModel() { }
         public PaginationViewModel(int TotalItems,int Page,int PageSize) 
         {
@@ -48,6 +49,7 @@
             EndPage = endPage;
             PageSize = pageSize;
             CurrentPage = currentPage;
+           
 
         }
 

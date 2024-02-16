@@ -2,8 +2,12 @@
 @{ 
     ViewBag.Title = "All Users";
 }
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    .table td{
+        padding:5px;
+    }
+</style>
+
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success mt-5">
@@ -41,23 +45,20 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Email</th>
+                        <th>Action</th>
                         <th>First Name</th>
                         <th>Last Name</th>
-                        <th>Action</th>
+                        <th>Email</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var user in Model.ApplicationUser.AllUsers)
                     {
-                        <tr>
-                            <td>@user.Email</td>
-                            <td>@user.FirstName</td>
-                            <td>@user.LastName</td>
+                        <tr class="p-2 m-2">
                             <td>
                                 <form method="post" asp-action="DeleteUser" asp-controller="Administration" asp-route-UserId="@user.Id">
                                     <a asp-action="EditUser" asp-controller="Administration"
-                                       asp-route-UserId="@user.Id" class="btn btn-primary">Edit</a>
+                                       asp-route-UserId="@user.Id" class="btn btn-primary"><i class="fa fa-edit"></i></a>
 
                                     <span id="confirmDeleteSpan_@user.Id" style="display:none">
                                         <span>Are you sure you want to Delete?</span>
@@ -66,10 +67,14 @@
                                     </span>
 
                                     <span id="deleteSpan_@user.Id">
-                                        <a href="#" class="btn btn-danger" onclick="confirmDelete('@user.Id', true);return false;">Delete</a>
+                                        <a href="#" class="btn btn-danger" onclick="confirmDelete('@user.Id', true);return false;">
+                                            <i class="fa fa-trash"></i></a>
                                     </span>
                                 </form>
                             </td>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>@user.Email</td>
                         </tr>
                     }
                 </tbody>
@@ -82,14 +87,20 @@
             No Users Added Yet
         </div>
     }
-    @Html.Partial("_Pagination", Model.Pagination);
+   @Html.Partial("_Pagination", Model.Pagination)
 </div>
 
 
 
-
-
-
+@* this is for dynamic rows selection in a page   
+<script>
+    $(document).ready(function () {
+        $('#updatePageSizeBtn').click(function () {
+            var pageSize = $('#pageSizeInput').val();
+            window.location.href = '@Url.Action("ListUsers", "Administration")?page=1&pageSize=' + pageSize;
+        });
+    });
+</script> *@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function confirmDelete(uniqueId, isTrue) {

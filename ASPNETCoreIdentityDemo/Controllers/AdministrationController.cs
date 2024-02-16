@@ -303,31 +303,35 @@ namespace ASPNETCoreIdentityDemo.Controllers
         }
 
         [HttpGet]
-        public IActionResult ListUsers(int page=1)
+        public IActionResult ListUsers(int page = 1, int pageSize = 5)
         {
-            const int PageSize = 5;
-            if (page < 1)page = 1;
-           
+            const int MaxPageSize = 50; // Limit the maximum page size to prevent abuse
+
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 1;
+            if (pageSize > MaxPageSize) pageSize = MaxPageSize;
+
             // Retrieve all users from your data source
             IEnumerable<ApplicationUser> allUsers = _userManager.Users;
-            ViewBag.AllUsersCount= allUsers.Count();
+            ViewBag.AllUsersCount = allUsers.Count();
 
             int totalUsers = allUsers.Count();
- 
-            var Pager = new PaginationViewModel(totalUsers, page, PageSize);
 
-            int pageSkip = (page - 1) * PageSize;
-            
-            var data = allUsers.OrderBy(u => u.Id).Skip(pageSkip).Take(PageSize).ToList();
+            var pager = new PaginationViewModel(totalUsers, page, pageSize);
+
+            int pageSkip = (page - 1) * pageSize;
+
+            var data = allUsers.OrderBy(u => u.Id).Skip(pageSkip).Take(pageSize).ToList();
 
             var model = new UserListViewModel
             {
                 ApplicationUser = new ApplicationUser { AllUsers = data },
-                Pagination = Pager
+                Pagination = pager
             };
 
             return View(model);
         }
+
 
 
         [Authorize(Roles = "Admin,SuperAdmin")]
