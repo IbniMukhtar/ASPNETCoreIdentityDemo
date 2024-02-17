@@ -2,6 +2,7 @@ using ASPNETCoreIdentityDemo.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ASPNETCoreIdentityDemo.Data;
+using ASPNETCoreIdentityDemo.Services;
 
 namespace ASPNETCoreIdentityDemo
 {
@@ -32,14 +33,18 @@ namespace ASPNETCoreIdentityDemo
                     options.Password.RequiredUniqueChars = 4;
                     // Other settings can be configured here
                 })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+            //Configure email service settings
+            builder.Services.AddTransient<ISenderEmail, EmailSender>();
+
             //Configure external signIn  settings
             builder.Services.AddAuthentication().AddGoogle(options =>
               {
-                 options.ClientId = "625428518583-udasq7ftrvmp66q0jo3iqksekpbqjm7g.apps.googleusercontent.com";
-                 options.ClientSecret = "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";
+                 options.ClientId = builder.Configuration["Google:AppId"];
+                  options.ClientSecret = builder.Configuration["Google:AppSecret"];
                   // You can set other options as needed.
-               });
+              });
 
             // Configure the Application Cookie settings
             builder.Services.ConfigureApplicationCookie(options =>
@@ -65,6 +70,11 @@ namespace ASPNETCoreIdentityDemo
             // Configure the HTTP request pipeline.
             var app = builder.Build();
             // Configure the HTTP request pipeline.
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

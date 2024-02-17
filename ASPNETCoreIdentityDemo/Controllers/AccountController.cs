@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using ASPNETCoreIdentityDemo.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Text.Encodings.Web;
 
 
 namespace ASPNETCoreIdentityDemo.Controllers
@@ -16,13 +19,16 @@ namespace ASPNETCoreIdentityDemo.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
+        //ISenderEmail will hold the EmailSender instance
+        private readonly ISenderEmail _emailSender;
 
         //Both UserManager and SignInManager services are injected into the AccountController using constructor injection
-        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager,RoleManager<ApplicationRole> roleManager)
+        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager,RoleManager<ApplicationRole> roleManager, ISenderEmail emailSender)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             _roleManager = roleManager;
+            _emailSender = emailSender;
         }
 
         [HttpGet]
@@ -45,7 +51,6 @@ namespace ASPNETCoreIdentityDemo.Controllers
                     LastName = model.LastName,  
                     DOB = model.DOB
                 };
-
                 // Store user data in AspNetUsers database table
                 var result = await userManager.CreateAsync(user, model.Password);
 
@@ -53,23 +58,21 @@ namespace ASPNETCoreIdentityDemo.Controllers
                 // SignInManager and redirect to index action of HomeController
                 if (result.Succeeded)
                 {
+                    await SendConfirmationEmail(model.Email, user);
                     ViewBag.Message = "Registration under Process! Please check your email to verify your account.";
-                    TempData["SuccessMessage"] = "Registration successful! Please check your email to verify your account.";
+                    TempData["SuccessMessage"] = "Before you can Login, please confirm your email, by clicking on the confirmation link we have emailed you..";
 
                     // Check if the user is signed in and has Admin or SuperAdmin role
                     if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
                     {
-                        return RedirectToAction("ListUsers", "Administration");
+                        /*return RedirectToAction("ListUsers", "Administration");*/
+                        return RedirectToAction("Login", "Account");
                     }
-
+                    TempData["SuccessMessage"] = "Registration under Process! Please check your email to verify your account..";
                     // If not an Admin or SuperAdmin, sign in the user and redirect to Login
-                    await signInManager.SignInAsync(user, isPersistent: false);
+                   /* await signInManager.SignInAsync(user, isPersistent: false);*/
                     return RedirectToAction("Login", "Account");
                 }
-
-
-                // If there are any errors, add them to the ModelState object
-                // which will be displayed by the validation summary tag helper
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
@@ -79,6 +82,45 @@ namespace ASPNETCoreIdentityDemo.Controllers
             return View(model);
         }
 
+        private async Task SendConfirmationEmail(string? email, ApplicationUser? user)
+        {
+            //Generate the Token
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            //Build the Email Confirmation Link which must include the Callback URL
+            var ConfirmationLink = Url.Action("ConfirmEmail", "Account",
+            new { UserId = user.Id, Token = token }, protocol: HttpContext.Request.Scheme);
+            //Send the Confirmation Email to the User Email Id
+            await _emailSender.SendEmailAsync(email, "Confirm Your Email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(ConfirmationLink)}'>clicking here</a>.", true);
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string UserId, string Token)
+        {
+            if (UserId == null || Token == null)
+            {
+                ViewBag.Message = "The link is Invalid or Expired";
+            }
+
+            //Find the User By Id
+            var user = await userManager.FindByIdAsync(UserId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"The User ID {UserId} is Invalid";
+                return View("NotFound");
+            }
+
+            //Call the ConfirmEmailAsync Method which will mark the Email as Confirmed
+            var result = await userManager.ConfirmEmailAsync(user, Token);
+            if (result.Succeeded)
+            {
+                ViewBag.Message = "Thank you for confirming your email";
+                TempData["SuccessMessage"] = "Thank you for confirming your email";
+                return RedirectToAction("Index", "DashBoard");
+            }
+
+            ViewBag.Message = "Email cannot be confirmed";
+            return View();
+        }
         [HttpGet]
         public async Task<IActionResult> Login(string? ReturnUrl = null)
         {
