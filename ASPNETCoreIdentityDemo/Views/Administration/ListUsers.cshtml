@@ -1,13 +1,9 @@
-﻿@model ASPNETCoreIdentityDemo.Models.ViewModels.UserListViewModel
+﻿@model IEnumerable<ApplicationUser>
 @{ 
     ViewBag.Title = "All Users";
 }
-<style>
-    .table td{
-        padding:5px;
-    }
-</style>
-
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success mt-5">
@@ -16,9 +12,9 @@
     </div>
 }
 
-<div class="mb-3">
-    <h3>All Users :<b class="text-success">@ViewBag.AllUsersCount</b></h3>
-    @if (Model.ApplicationUser.AllUsers.Any())
+<div  style="margin-bottom:50px;">
+ @*    <h3>All Users :<b class="text-success">@ViewBag.AllUsersCount</b></h3> *@
+    @if (Model.Any())
     {
         <div class="row justify-content-between">
             <div class="col-md-6">
@@ -26,23 +22,10 @@
                     Add New User
                 </a>
             </div>
-            <div class="col-md-4 text-md-right p-2">
-                <div class="input-group">
-                    <form method="post" id="searchForm" asp-action="Search" asp-controller="Administration" class="w-100">
-                        <div class="input-group-append w-100">
-                            <input type="search" name="searchTerm" placeholder="Search..." class="form-control" />
-                            <button type="submit" class="btn btn-primary" data-mdb-ripple-init>
-                                <i class="fa fa-search"></i>
-                            </button>
-                            <label class="form-label visually-hidden">Search</label>
-                        </div>
-                    </form>
-                </div>
-            </div>
         </div>
 
         <div class="table-responsive">
-            <table class="table">
+            <table class="table" id="myTable">
                 <thead>
                     <tr>
                         <th>Action</th>
@@ -52,22 +35,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in Model.ApplicationUser.AllUsers)
+                    @foreach (var user in Model)
                     {
-                        <tr class="p-2 m-2">
+                        <tr>
                             <td>
                                 <form method="post" asp-action="DeleteUser" asp-controller="Administration" asp-route-UserId="@user.Id">
                                     <a asp-action="EditUser" asp-controller="Administration"
-                                       asp-route-UserId="@user.Id" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                                       asp-route-UserId="@user.Id" class="btn btn-primary p-1"><i class="fa fa-edit"></i></a>
 
                                     <span id="confirmDeleteSpan_@user.Id" style="display:none">
-                                        <span>Are you sure you want to Delete?</span>
-                                        <button type="submit" class="btn btn-danger">Yes</button>
-                                        <a href="#" class="btn btn-primary" onclick="confirmDelete('@user.Id', false);return false;">No</a>
+                                        <span class="bg-warning" style="font-size:small;">Are you sure?</span>
+                                        <button type="submit" class="btn btn-danger p-1">Yes</button>
+                                        <a href="#" class="btn btn-primary p-1" onclick="confirmDelete('@user.Id', false);return false;">No</a>
                                     </span>
 
                                     <span id="deleteSpan_@user.Id">
-                                        <a href="#" class="btn btn-danger" onclick="confirmDelete('@user.Id', true);return false;">
+                                        <a href="#" class="btn btn-danger p-1" onclick="confirmDelete('@user.Id', true);return false;">
                                             <i class="fa fa-trash"></i></a>
                                     </span>
                                 </form>
@@ -87,41 +70,28 @@
             No Users Added Yet
         </div>
     }
-   @Html.Partial("_Pagination", Model.Pagination)
 </div>
-
-
-
-@* this is for dynamic rows selection in a page  *@  
-<script>
-    $(document).ready(function () {
-        $('#updatePageSizeBtn').click(function () {
-            var pageSize = $('#pageSizeInput').val();
-            window.location.href = '@Url.Action("ListUsers", "Administration")?page=1&pageSize=' + pageSize;
-        });
-    });
-</script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>   
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.jqueryui.js"></script>
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
 <script>
-    function confirmDelete(uniqueId, isTrue) {
-        var deleteSpan = 'deleteSpan_' + uniqueId;
-        var confirmDeleteSpan = 'confirmDeleteSpan_' + uniqueId;
-
-        if (isTrue) {
-            $('#' + deleteSpan).hide();
-            $('#' + confirmDeleteSpan).show();
-        } else {
-            $('#' + deleteSpan).show();
-            $('#' + confirmDeleteSpan).hide();
-
-            // Trigger the form submission when "Yes" is clicked
-            $('form[asp-route-UserId="' + uniqueId + '"]').submit();
-        }
-        return false;
-    }
-
     $(document).ready(function () {
         var alertElement = $(".alert");
+
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                "lengthMenu": [5, 10, 15, 20], 
+                "pageLength": 5, 
+                "searching": true, 
+                "ordering": true, 
+                "paging": true, 
+               
+            });
+        });
 
         // Check if the alert has already been manually closed
         if (!alertElement.hasClass("manual-close")) {
@@ -138,9 +108,27 @@
             alertElement.addClass("manual-close"); // Mark as manually closed
         });
 
+        // Handle alert closed event
         alertElement.on("closed.bs.alert", function () {
             console.log("Alert is closed");
             // Add any additional logic you may need after the alert is closed
         });
     });
+
+    function confirmDelete(uniqueId, isTrue) {
+        var deleteSpan = 'deleteSpan_' + uniqueId;
+        var confirmDeleteSpan = 'confirmDeleteSpan_' + uniqueId;
+
+        if (isTrue) {
+            $('#' + deleteSpan).hide();
+            $('#' + confirmDeleteSpan).show();
+        } else {
+            $('#' + deleteSpan).show();
+            $('#' + confirmDeleteSpan).hide();
+
+            // Trigger the form submission when "Yes" is clicked
+            $('form[action*="DeleteUser"][asp-route-UserId="' + uniqueId + '"]').submit();
+        }
+        return false;
+    }
 </script>
