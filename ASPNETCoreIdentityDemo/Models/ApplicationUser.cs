@@ -5,14 +5,13 @@ namespace ASPNETCoreIdentityDemo.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        [Required(ErrorMessage = "This field is required.")]
+        [Required(ErrorMessage = "This FirstName field is required.")]
         public string FirstName { get; set; }
 
-        [Required(ErrorMessage = "This Email field is required.")]
+        [Required(ErrorMessage = "This  field LastName is required.")]
         public string LastName { get; set; } = null!;
 
-        [Required(ErrorMessage = "This Email field is required.")]
-        [DataType(DataType.DateTime)]
+        [Required(ErrorMessage = "This  field is required.")]
         public DateTime DOB { get; set; }
         public IEnumerable<ApplicationUser> AllUsers { get; set; }
 

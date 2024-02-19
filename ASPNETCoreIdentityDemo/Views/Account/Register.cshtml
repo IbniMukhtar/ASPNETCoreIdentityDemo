@@ -4,44 +4,76 @@
     ViewBag.Title = "User Registration";
 }
 
+
 <style>
-    .form-control{
-        margin-top:6px;
+    .form-control {
+        margin-top: 6px;
     }
 </style>
-<h1 class="row justify-content-center">User Registration</h1>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <input asp-for="FirstName" placeholder="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+<h3 class="row justify-content-center">User Registration</h3>
+
+@if (Model != null)
+{
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <input asp-for="FirstName" placeholder="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="LastName" placeholder="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="DOB" placeholder="DOB" class="form-control" />
+                    <span asp-validation-for="DOB" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="Email" placeholder="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="Password" placeholder="Enter Your Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="ConfirmPassword" placeholder="Confirm Your Password" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="d-flex justify-content-center mt-3 ">
+                    <button type="submit" class="btn btn-primary" style="width:50%;">Register</button>
+                </div>
+            </form>
+
+            <div class="row justify-content-center border-primary">
+                <div class="col-md-6">
+                    <hr />
+
+                    @if (Model.ExternalLogins?.Count == 0)
+                    {
+                        <div>No external logins configured</div>
+                    }
+                    else
+                    {
+                        <form method="post" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+                            <div>
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    <button class="btn  btn-block btn-primary" style="background-color: #dd4b39;"
+                                            type="submit" name="provider" value="@provider.Name">
+                                        <i class="fa-brands fa-google me-2"></i>
+                                        Sign in with @provider.DisplayName
+                                    </button>
+                                }
+                            </div>
+                        </form>
+                    }
+                </div>
             </div>
-            <div class="form-group">
-                <input asp-for="LastName" placeholder="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input asp-for="DOB" placeholder="DOB" class="form-control" />
-                <span asp-validation-for="DOB" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input asp-for="Email" placeholder="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input asp-for="Password" placeholder="Enter Your Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input asp-for="ConfirmPassword" placeholder="Confirm Your Password" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <div class="d-flex justify-content-center mt-3 ">
-                <button type="submit" class="btn btn-primary">Register</button>
-           </div>
-        </form>
+
+        </div>
     </div>
-</div>
+}

@@ -32,9 +32,13 @@ namespace ASPNETCoreIdentityDemo.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public async Task <IActionResult> Register()
         {
-            return View();
+            RegisterViewModel model = new RegisterViewModel
+            {
+                ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+            return View(model);
         }
 
         [HttpPost]

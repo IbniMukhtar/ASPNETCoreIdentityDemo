@@ -30,6 +30,8 @@ namespace ASPNETCoreIdentityDemo.Models.ViewModels
         public string? LastName { get; set; }
 
         [Display(Name = "DOB")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DOB { get; set; }
         public List<string> Claims { get; set; }
         public IList<string> Roles { get; set; }

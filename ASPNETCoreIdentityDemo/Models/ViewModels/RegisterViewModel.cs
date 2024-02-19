@@ -1,20 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace ASPNETCoreIdentityDemo.Models.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "This field is required.")]
+
+
+        [Required(ErrorMessage = "This FirstName field is required.")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
-        [Required(ErrorMessage = "This Email field is required.")]
+        [Required(ErrorMessage = "This  LastName field is required.")]
         [Display(Name = "LastName")]
         public string LastName { get; set; }
 
-        [Required(ErrorMessage = "This Email field is required.")]
-        [DataType(DataType.DateTime)]
+       
+        [Display(Name = "DOB")]
+        [DataType(DataType.Date)]
+  /*      [MinimumAge(18)]*/
+        [Required(ErrorMessage = "This DOB field is required.")]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DOB { get; set; }
 
         [Required(ErrorMessage = "The Email field is required.")]
@@ -33,5 +40,8 @@ namespace ASPNETCoreIdentityDemo.Models.ViewModels
         [Compare("Password", ErrorMessage = "Password and confirmation password do not match.")]
         [NotMapped]
         public string? ConfirmPassword { get; set; }
+        // AuthenticationScheme is in Microsoft.AspNetCore.Authentication namespace
+        public IList<AuthenticationScheme>? ExternalLogins { get; set; }
+              public string? ReturnUrl { get; set; }
     }
 }
