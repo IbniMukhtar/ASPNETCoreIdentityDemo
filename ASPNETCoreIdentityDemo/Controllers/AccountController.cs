@@ -135,6 +135,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
                 ReturnUrl = ReturnUrl,
                 ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
             };
+            ViewBag.EL = model.ExternalLogins;
             return View(model);
         }
 
@@ -165,10 +166,16 @@ namespace ASPNETCoreIdentityDemo.Controllers
                         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                         return View(model);
                     }
+                    
                 }
             }
-
-            return View(model);
+            LoginViewModel model1 = new LoginViewModel
+            {
+                ReturnUrl = ReturnUrl,
+                ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return View(model1);
         }
 
         [AllowAnonymous]
@@ -299,6 +306,98 @@ namespace ASPNETCoreIdentityDemo.Controllers
             {
                 return Json($"Email {Email} is already in use.");
             }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                //fetch the User Details
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    //If User does not exists, redirect to the Login Page
+                    return RedirectToAction("Login", "Account");
+                }
+                // ChangePasswordAsync Method changes the user password
+                var result = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                // The new password did not meet the complexity rules or the current password is incorrect.
+                // Add these errors to the ModelState and rerender ChangePassword view
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View();
+                }
+                // Upon successfully changing the password refresh sign-in cookie
+                await signInManager.RefreshSignInAsync(user);
+                //Then redirect the user to the ChangePasswordConfirmation view
+                TempData["SuccessMessage"] = "Your password is successfully changed.";
+                return RedirectToAction("Index", "DashBoard");
+            }
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> AddPassword()
+        {
+            //First Fetch the User Details
+            var user = await userManager.GetUserAsync(User);
+            //Then Check whether the User Already has a Password
+            var userHasPassword = await userManager.HasPasswordAsync(user);
+            //If the user already has a password, redirect to the ChangePassword Action method
+            if (userHasPassword)
+            {
+                return RedirectToAction("ChangePassword", "Account");
+            }
+            //If the user has no password, then display the Add Password view
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddPassword(AddPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Unable to Load User.");
+                    return View();
+                }
+                //Call the AddPasswordAsync method to set the new password without old password
+                var result = await userManager.AddPasswordAsync(user, model.NewPassword);
+                // Handle the failure scenario
+                if (!result.Succeeded)
+                {
+                    //fetch all the error messages and display on the view
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View();
+                }
+                // Handle Success Scenario
+                // refresh the authentication cookie to store the updated user information
+                await signInManager.RefreshSignInAsync(user);
+                TempData["SuccessMessage"] = "You have successfully set a local password.Now, you can use either your local user account or external account to Login";
+                //redirecting to the AddPasswordConfirmation action method
+                return RedirectToAction("Index", "DashBoard");
+            }
+            return View();
         }
 
         [HttpPost]

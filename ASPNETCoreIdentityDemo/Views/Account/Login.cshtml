@@ -19,6 +19,7 @@
         <h3 class="row justify-content-center">User Login</h3>
         <form method="post">
             <input type="hidden" name="ReturnUrl" value="@ViewData["ReturnUrl"]" />
+            <input type="hidden" name="ReturnUrl" value="@ViewData["EL"]" />
             <div class="form-group">
                 <input asp-for="Email" placeholder="Enter userName or Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>

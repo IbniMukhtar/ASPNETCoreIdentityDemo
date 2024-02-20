@@ -12,11 +12,13 @@
 
 @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
 {
-    @Html.Partial("_AdminDashPartial", (object)ViewBag);
+    <partial name="_AdminDashPartial" model="(object)ViewBag" />
+    //@Html.Partial("_AdminDashPartial", (object)ViewBag);
 }
 else
 {
-    @Html.Partial("_UserDashPartial", (object)ViewBag);
+    <partial name="_UserDashPartial" model="(object)ViewBag" />
+    //@Html.Partial("_UserDashPartial", (object)ViewBag);
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
@@ -26,4 +28,3 @@ else
         });
     });
 </script>
-

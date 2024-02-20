@@ -1,6 +1,20 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
-
+@inject UserManager<ApplicationUser> UserManager
+@{
+@if (User.Identity.IsAuthenticated)
+{
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+    if (user != null && await UserManager.HasPasswordAsync(user))
+    {
+        // User has a password
+    }
+    else
+    {
+        // User does not have a password
+    }
+}
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +30,8 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
+    <!-- Option 1: Include in HTML -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
 </head>
 <body>
@@ -35,7 +51,10 @@
                 }
                 else
                 {
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    
+                        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                
                 }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +82,7 @@
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">About</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="DashBoard" asp-action="Index">Home</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="#" asp-action="#">Profile Update</a>
@@ -85,6 +104,18 @@
                                     </a>
                                     <a class="dropdown-item" href="#">Settings</a>
                                     <a class="dropdown-item" href="#">Update</a>
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        var user = await UserManager.FindByNameAsync(User.Identity.Name);
+                                        if (user != null && await UserManager.HasPasswordAsync(user))
+                                        {
+                                            <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Change Password</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="dropdown-item" asp-controller="Account" asp-action="AddPassword">Add Password</a>
+                                        }
+                                    }
                                     <div class="dropdown-divider"></div>
                                     <form method="post" asp-controller="account" asp-action="logout">
                                         <button type="submit" class="dropdown-item">Logout</button>
