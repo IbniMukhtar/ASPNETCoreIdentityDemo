@@ -1,20 +1,20 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
-@{
-@if (User.Identity.IsAuthenticated)
-{
-    var user = await UserManager.FindByNameAsync(User.Identity.Name);
-    if (user != null && await UserManager.HasPasswordAsync(user))
+@* @{
+    @if (User.Identity!.IsAuthenticated)
     {
-        // User has a password
+        var user = await UserManager.FindByNameAsync(User.Identity.Name!);
+        if (user != null && await UserManager.HasPasswordAsync(user))
+        {
+            // User has a password
+        }
+        else
+        {
+            // User does not have a password
+        }
     }
-    else
-    {
-        // User does not have a password
-    }
-}
-}
+} *@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ASPNETCoreIdentityDemo.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
@@ -51,10 +51,8 @@
                 }
                 else
                 {
-                    
-                        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="About">About</a>
-                
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="About">About</a>
                 }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -89,24 +87,43 @@
                                 </li>
                             }
                         }
-                       
+
                     </ul>
                     <ul class="navbar-nav ml-auto">
                         @if (SignInManager.IsSignedIn(User))
                         {
+                            var user = await UserManager.FindByNameAsync(User.Identity!.Name!);
+
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Manage Account
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="userDropdown">
-                                    <a class="dropdown-item" href="#"><b class="text-success" style="font-size:12px;margin-bottom:0px;">
-                                        @User?.Identity?.Name</b>
+                                    <a class="dropdown-item" href="#">
+                                        <b class="text-success" style="font-size:12px;margin-bottom:0px;">
+                                            @User?.Identity?.Name
+                                        </b>
                                     </a>
                                     <a class="dropdown-item" href="#">Settings</a>
                                     <a class="dropdown-item" href="#">Update</a>
-                                    @if (User.Identity.IsAuthenticated)
+                                    @if (!string.IsNullOrEmpty(user!.PhoneNumber))
                                     {
-                                        var user = await UserManager.FindByNameAsync(User.Identity.Name);
+                                        @if (user.PhoneNumberConfirmed)
+                                        {
+                                            <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ConfirmPhoneNumber">Change Phone No</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ConfirmPhoneNumber">Change Phone No</a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ConfirmPhoneNumber">Add Phone No</a>
+                                    }
+                                    @if (User!.Identity.IsAuthenticated)
+                                    {
+                                        @* var user = await UserManager.FindByNameAsync(User.Identity.Name!); *@
                                         if (user != null && await UserManager.HasPasswordAsync(user))
                                         {
                                             <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Change Password</a>
@@ -122,15 +139,28 @@
                                     </form>
                                 </div>
                             </li>
+
+                            <a! href="@Url.Action("UploadProfilePicture", "Account")">
+                                @if (user != null && user.ProfilePicture != null && user.ProfilePicture.Length > 0)
+                                {
+                                    <img! class="rounded-circle" style="width:35px;" alt="Profile Picture" src="data:image;base64,@Convert.ToBase64String(user.ProfilePicture)" />
+                                }
+                                else
+                                {
+                                    <!-- Default profile picture or placeholder image -->
+                                    <img class="rounded-circle" style="width:35px;" src="~/Images/demo.png" alt="Profile Picture">
+
+                                }
+                                </a>
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                                </li>
                         }
                     </ul>
                 </div>

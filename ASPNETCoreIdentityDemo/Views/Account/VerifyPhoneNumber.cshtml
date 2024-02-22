@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "VerifyPhoneNumber";
+}
+<h1>Verify PhoneNumber</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form method="post" asp-action="VerifyPhoneNumber" asp-controller="Account">
+            <div class="form-group">
+                <label>Enter the Verification Token Send to Your Phone Number</label>
+                <input type="text" name="Token" id="Token" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Verify Phone Number</button>
+        </form>
+    </div>
+</div>

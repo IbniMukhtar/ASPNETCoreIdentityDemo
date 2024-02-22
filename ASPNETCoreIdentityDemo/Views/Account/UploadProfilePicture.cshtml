@@ -1,0 +1,60 @@
+﻿@model ASPNETCoreIdentityDemo.Models.ViewModels.ProfilePictureViewModel
+
+
+<div class="row justify-content-end">
+    <div class="col-6">
+        <form asp-action="UploadProfilePicture" enctype="multipart/form-data" method="post">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Upload Profile Picture</h5>
+                            <!-- Add cancel icon -->
+                            <button type="button" class="btn btn-sm btn-danger" onclick="cancelUpload()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <label for="pictureInput" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-upload mr-2"></i> Choose Picture
+                                <input type="file" id="pictureInput" name="Picture" class="d-none" accept="image/*" onchange="displayFileName(this)">
+                            </label>
+@*                             <a class="btn"><i class="fas fa-trash text-danger p-0 m-0"></i></a> *@
+                        </div>
+                        <!-- Add this element to display the selected file name -->
+                        <strong id="fileNameDisplay" class="text-success"></strong>
+                        <!-- Add remove profile picture button -->
+                        <span asp-validation-for="Picture" class="text-danger"></span>
+                    </div>
+                  <div class="card-footer">
+                        <small class="form-text text-muted p-3">Accepted formats: JPEG, PNG</small>
+                        <button type="submit" class="btn btn-primary btn-block">Upload</button>
+                  </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function displayFileName(input) {
+        // Check if any file is selected
+        if (input.files && input.files.length > 0) {
+            // Get the file name
+            var fileName = input.files[0].name;
+            // Display the file name
+            var fileNameDisplay = document.getElementById('fileNameDisplay');
+            fileNameDisplay.innerText = 'Selected File: ' + fileName;
+        }
+    }
+</script>
+
+
+
+
+
+

@@ -1,0 +1,639 @@
+﻿/*--------------------------------------------------------------
+# Index Page
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Animated Hero Section
+--------------------------------------------------------------*/
+.hero-animated {
+    width: 100%;
+    min-height: 50vh;
+    background: url("../img/hero-bg.png") center center;
+    background-size: cover;
+    position: relative;
+    padding: 120px 0 60px;
+}
+
+    .hero-animated h2 {
+        margin: 0 0 10px 0;
+        font-size: 48px;
+        font-weight: 300;
+        color: var(--color-secondary);
+        font-family: var(--font-secondary);
+    }
+
+        .hero-animated h2 span {
+            color: var(--color-primary);
+        }
+
+    .hero-animated p {
+        color: rgba(var(--color-secondary-rgb), 0.8);
+        margin: 0 0 30px 0;
+        font-size: 20px;
+        font-weight: 400;
+    }
+
+    .hero-animated .animated {
+        margin-bottom: 60px;
+        animation: up-down 2s ease-in-out infinite alternate-reverse both;
+    }
+
+@media (min-width: 992px) {
+    .hero-animated .animated {
+        max-width: 45%;
+    }
+}
+
+@media (max-width: 991px) {
+    .hero-animated .animated {
+        max-width: 60%;
+    }
+}
+
+@media (max-width: 575px) {
+    .hero-animated .animated {
+        max-width: 80%;
+    }
+}
+
+.hero-animated .btn-get-started {
+    font-size: 16px;
+    font-weight: 400;
+    display: inline-block;
+    padding: 10px 28px;
+    border-radius: 4px;
+    transition: 0.5s;
+    color: var(--color-white);
+    background: var(--color-primary);
+    font-family: var(--font-secondary);
+}
+
+    .hero-animated .btn-get-started:hover {
+        background: rgba(var(--color-primary-rgb), 0.8);
+    }
+
+.hero-animated .btn-watch-video {
+    font-size: 16px;
+    transition: 0.5s;
+    margin-left: 25px;
+    font-family: var(--font-secondary);
+    color: var(--color-secondary);
+    font-weight: 600;
+}
+
+    .hero-animated .btn-watch-video i {
+        color: var(--color-primary);
+        font-size: 32px;
+        transition: 0.3s;
+        line-height: 0;
+        margin-right: 8px;
+    }
+
+    .hero-animated .btn-watch-video:hover {
+        color: var(--color-primary);
+    }
+
+        .hero-animated .btn-watch-video:hover i {
+            color: rgba(var(--color-primary-rgb), 0.8);
+        }
+
+@media (max-width: 640px) {
+    .hero-animated h2 {
+        font-size: 32px;
+    }
+
+    .hero-animated p {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+
+    .hero-animated .btn-get-started,
+    .hero-animated .btn-watch-video {
+        font-size: 14px;
+    }
+}
+
+@keyframes up-down {
+    0% {
+        transform: translateY(10px);
+    }
+
+    100% {
+        transform: translateY(-10px);
+    }
+}
+
+/*--------------------------------------------------------------
+# Carousel Hero Section
+--------------------------------------------------------------*/
+.hero {
+    width: 100%;
+    padding: 0;
+    background: var(--color-black);
+    background: url("../img/hero-bg.png") center center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 0 60px 0;
+}
+
+    .hero .carousel-item {
+        overflow: hidden;
+    }
+
+@media (max-width: 640px) {
+    .hero .container {
+        padding: 0 60px;
+    }
+}
+
+.hero h2 {
+    color: var(--color-secondary);
+    margin-bottom: 25px;
+    font-size: 48px;
+    font-weight: 300;
+    animation: fadeInDown 1s both 0.2s;
+}
+
+@media (max-width: 768px) {
+    .hero h2 {
+        font-size: 30px;
+    }
+}
+
+.hero p {
+    color: var(--color-secondary-light);
+    animation: fadeInDown 1s both 0.4s;
+    font-weight: 500;
+    margin-bottom: 30px;
+}
+
+.hero .img {
+    margin-bottom: 40px;
+    animation: fadeInDownLite 1s both;
+}
+
+.hero .btn-get-started {
+    font-family: var(--font-secondary);
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 1px;
+    display: inline-block;
+    padding: 8px 32px;
+    border-radius: 5px;
+    transition: 0.5s;
+    animation: fadeInUp 1s both 0.6s;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+}
+
+    .hero .btn-get-started:hover {
+        background: var(--color-primary);
+        color: var(--color-white);
+    }
+
+.hero .carousel-control-prev {
+    justify-content: start;
+}
+
+@media (min-width: 640px) {
+    .hero .carousel-control-prev {
+        padding-left: 15px;
+    }
+}
+
+.hero .carousel-control-next {
+    justify-content: end;
+}
+
+@media (min-width: 640px) {
+    .hero .carousel-control-next {
+        padding-right: 15px;
+    }
+}
+
+.hero .carousel-control-next-icon,
+.hero .carousel-control-prev-icon {
+    background: none;
+    font-size: 26px;
+    line-height: 0;
+    background: rgba(var(--color-secondary-rgb), 0.4);
+    color: rgba(var(--color-white-rgb), 0.98);
+    border-radius: 50px;
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero .carousel-control-next-icon {
+    padding-left: 3px;
+}
+
+.hero .carousel-control-prev-icon {
+    padding-right: 3px;
+}
+
+.hero .carousel-control-prev,
+.hero .carousel-control-next {
+    transition: 0.3s;
+}
+
+    .hero .carousel-control-prev:focus,
+    .hero .carousel-control-next:focus {
+        opacity: 0.5;
+    }
+
+    .hero .carousel-control-prev:hover,
+    .hero .carousel-control-next:hover {
+        opacity: 0.9;
+    }
+
+.hero .carousel-indicators li {
+    list-style-type: none;
+    cursor: pointer;
+    background: rgba(var(--color-secondary-rgb), 0.5);
+    overflow: hidden;
+    border: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50px;
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+    .hero .carousel-indicators li.active {
+        opacity: 1;
+        background: var(--color-primary);
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeInDownLite {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -10%, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/*--------------------------------------------------------------
+# Fullscreen Hero Section
+--------------------------------------------------------------*/
+.hero-fullscreen {
+    width: 100%;
+    min-height: 100vh;
+    background: url("../img/hero-fullscreen-bg.jpg") center center;
+    background-size: cover;
+    position: relative;
+    padding: 120px 0 60px;
+}
+
+    .hero-fullscreen:before {
+        content: "";
+        background: rgba(var(--color-white-rgb), 0.85);
+        position: absolute;
+        inset: 0;
+    }
+
+@media (min-width: 1365px) {
+    .hero-fullscreen {
+        background-attachment: fixed;
+    }
+}
+
+.hero-fullscreen h2 {
+    margin: 0 0 10px 0;
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--color-secondary);
+    font-family: var(--font-secondary);
+}
+
+    .hero-fullscreen h2 span {
+        color: var(--color-primary);
+    }
+
+.hero-fullscreen p {
+    color: rgba(var(--color-secondary-rgb), 0.8);
+    margin: 0 0 30px 0;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.hero-fullscreen .btn-get-started {
+    font-size: 16px;
+    font-weight: 400;
+    display: inline-block;
+    padding: 10px 28px;
+    border-radius: 4px;
+    transition: 0.5s;
+    color: var(--color-white);
+    background: var(--color-primary);
+    font-family: var(--font-secondary);
+}
+
+    .hero-fullscreen .btn-get-started:hover {
+        background: rgba(var(--color-primary-rgb), 0.8);
+    }
+
+.hero-fullscreen .btn-watch-video {
+    font-size: 16px;
+    transition: 0.5s;
+    margin-left: 25px;
+    font-family: var(--font-secondary);
+    color: var(--color-secondary);
+    font-weight: 600;
+}
+
+    .hero-fullscreen .btn-watch-video i {
+        color: var(--color-primary);
+        font-size: 32px;
+        transition: 0.3s;
+        line-height: 0;
+        margin-right: 8px;
+    }
+
+    .hero-fullscreen .btn-watch-video:hover {
+        color: var(--color-primary);
+    }
+
+        .hero-fullscreen .btn-watch-video:hover i {
+            color: rgba(var(--color-primary-rgb), 0.8);
+        }
+
+@media (max-width: 640px) {
+    .hero-fullscreen h2 {
+        font-size: 32px;
+    }
+
+    .hero-fullscreen p {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+
+    .hero-fullscreen .btn-get-started,
+    .hero-fullscreen .btn-watch-video {
+        font-size: 14px;
+    }
+}
+
+/*--------------------------------------------------------------
+# Static Hero Section
+--------------------------------------------------------------*/
+.hero-static {
+    width: 100%;
+    min-height: 50vh;
+    background: url("../img/hero-bg.png") center center;
+    background-size: cover;
+    position: relative;
+    padding: 120px 0 60px;
+}
+
+    .hero-static h2 {
+        margin: 0 0 10px 0;
+        font-size: 48px;
+        font-weight: 300;
+        color: var(--color-secondary);
+        font-family: var(--font-secondary);
+    }
+
+        .hero-static h2 span {
+            color: var(--color-primary);
+        }
+
+    .hero-static p {
+        color: rgba(var(--color-secondary-rgb), 0.8);
+        margin: 0 0 30px 0;
+        font-size: 20px;
+        font-weight: 400;
+    }
+
+    .hero-static .btn-get-started {
+        font-size: 16px;
+        font-weight: 400;
+        display: inline-block;
+        padding: 10px 28px;
+        border-radius: 4px;
+        transition: 0.5s;
+        color: var(--color-white);
+        background: var(--color-primary);
+        font-family: var(--font-secondary);
+    }
+
+        .hero-static .btn-get-started:hover {
+            background: rgba(var(--color-primary-rgb), 0.8);
+        }
+
+    .hero-static .btn-watch-video {
+        font-size: 16px;
+        transition: 0.5s;
+        margin-left: 25px;
+        font-family: var(--font-secondary);
+        color: var(--color-secondary);
+        font-weight: 600;
+    }
+
+        .hero-static .btn-watch-video i {
+            color: var(--color-primary);
+            font-size: 32px;
+            transition: 0.3s;
+            line-height: 0;
+            margin-right: 8px;
+        }
+
+        .hero-static .btn-watch-video:hover {
+            color: var(--color-primary);
+        }
+
+            .hero-static .btn-watch-video:hover i {
+                color: rgba(var(--color-primary-rgb), 0.8);
+            }
+
+@media (max-width: 640px) {
+    .hero-static h2 {
+        font-size: 32px;
+    }
+
+    .hero-static p {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+
+    .hero-static .btn-get-started,
+    .hero-static .btn-watch-video {
+        font-size: 14px;
+    }
+}
+
+/*--------------------------------------------------------------
+# Featured Services Section
+--------------------------------------------------------------*/
+.featured-services .service-item {
+    padding: 30px;
+    transition: all ease-in-out 0.4s;
+    background: var(--color-white);
+    height: 100%;
+}
+
+    .featured-services .service-item .icon {
+        margin-bottom: 10px;
+    }
+
+        .featured-services .service-item .icon i {
+            color: var(--color-primary);
+            font-size: 36px;
+            transition: 0.3s;
+        }
+
+    .featured-services .service-item h4 {
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 24px;
+    }
+
+        .featured-services .service-item h4 a {
+            color: var(--color-secondary);
+            transition: ease-in-out 0.3s;
+        }
+
+    .featured-services .service-item p {
+        line-height: 24px;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    .featured-services .service-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0px 0 60px 0 rgba(var(--color-secondary-rgb), 0.1);
+    }
+
+        .featured-services .service-item:hover h4 a {
+            color: var(--color-primary);
+        }
+
+/*--------------------------------------------------------------
+# About Section
+--------------------------------------------------------------*/
+.about .about-img {
+    position: relative;
+    margin: 60px 0 0 60px;
+}
+
+    .about .about-img:before {
+        position: absolute;
+        inset: -60px 0 0 -60px;
+        z-index: -1;
+        content: "";
+        background: url("../img/about-bg.png") top left;
+        background-repeat: no-repeat;
+    }
+
+@media (max-width: 575px) {
+    .about .about-img {
+        margin: 30px 0 0 30px;
+    }
+
+        .about .about-img:before {
+            inset: -30px 0 0 -30px;
+        }
+}
+
+.about h3 {
+    color: var(--color-secondary);
+    font-family: var(--font-secondary);
+    font-weight: 300;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .about h3 {
+        font-size: 28px;
+    }
+}
+
+.about .nav-pills {
+    border-bottom: 1px solid rgba(var(--color-secondary-rgb), 0.2);
+}
+
+    .about .nav-pills li + li {
+        margin-left: 40px;
+    }
+
+.about .nav-link {
+    background: none;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--color-secondary);
+    padding: 12px 0;
+    margin-bottom: -2px;
+    border-radius: 0;
+    font-family: var(--font-secondary);
+}
+
+    .about .nav-link.active {
+        color: var(--color-primary);
+        background: none;
+        border-bottom: 3px solid var(--color-primary);
+    }
+
+@media (max-width: 575px) {
+    .about .nav-link {
+        font-size: 16px;
+    }
+}
+
+.about .tab-content h4 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 700;
+    color: var(--color-secondary);
+}
+
+.about .tab-content i {
+    font-size: 22px;
+    line-height: 0;
+    margin-right: 8px;
+    color: var(--color-primary);
+}

@@ -1,0 +1,30 @@
+﻿@model ASPNETCoreIdentityDemo.Models.ViewModels.ChangePhoneNumberViewModel
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success mt-5">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+        <p>@TempData["SuccessMessage"]</p>
+    </div>
+}
+
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Change Phone Number</div>
+                <div class="card-body">
+                    <form asp-action="ChangePhoneNumber" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-group">
+                            <label asp-for="NewPhoneNumber" class="form-label">New Phone Number</label>
+                            <input asp-for="NewPhoneNumber" class="form-control" />
+                            <span asp-validation-for="NewPhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Phone Number</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

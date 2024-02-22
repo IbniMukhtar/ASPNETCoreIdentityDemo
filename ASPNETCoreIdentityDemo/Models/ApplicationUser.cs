@@ -13,7 +13,8 @@ namespace ASPNETCoreIdentityDemo.Models
 
         [Required(ErrorMessage = "This  field is required.")]
         public DateTime DOB { get; set; }
-        public IEnumerable<ApplicationUser> AllUsers { get; set; }
+        public IEnumerable<ApplicationUser>? AllUsers { get; set; }
+        public byte[]? ProfilePicture { get; set; }
 
     }
 }

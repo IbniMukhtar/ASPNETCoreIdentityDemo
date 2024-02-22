@@ -21,20 +21,26 @@ namespace ASPNETCoreIdentityDemo.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
         //ISenderEmail will hold the EmailSender instance
         private readonly ISenderEmail _emailSender;
+        private readonly ISMSSender _SMSSender;
 
         //Both UserManager and SignInManager services are injected into the AccountController using constructor injection
-        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager,RoleManager<ApplicationRole> roleManager, ISenderEmail emailSender)
+        public AccountController(UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            RoleManager<ApplicationRole> roleManager,
+            ISenderEmail emailSender,
+            ISMSSender SMSSender)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             _roleManager = roleManager;
             _emailSender = emailSender;
+            _SMSSender = SMSSender;
         }
 
         [HttpGet]
-        public async Task <IActionResult> Register()
+        public async Task<IActionResult> Register()
         {
-            RegisterViewModel model = new RegisterViewModel
+            RegisterViewModel model = new()
             {
                 ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
             };
@@ -52,11 +58,16 @@ namespace ASPNETCoreIdentityDemo.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     FirstName = model.FirstName,
-                    LastName = model.LastName,  
-                    DOB = model.DOB
+                    LastName = model.LastName,
+                    DOB = model.DOB,
+                    PhoneNumber = model.PhoneNumber
                 };
+                if (!string.IsNullOrEmpty(model.PhoneNumber))
+                {
+
+                }
                 // Store user data in AspNetUsers database table
-                var result = await userManager.CreateAsync(user, model.Password);
+                var result = await userManager.CreateAsync(user, model.Password!);
 
                 // If user is successfully created, sign-in the user using
                 // SignInManager and redirect to index action of HomeController
@@ -74,7 +85,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
                     }
                     TempData["SuccessMessage"] = "Registration under Process! Please check your email to verify your account..";
                     // If not an Admin or SuperAdmin, sign in the user and redirect to Login
-                   /* await signInManager.SignInAsync(user, isPersistent: false);*/
+                    /* await signInManager.SignInAsync(user, isPersistent: false);*/
                     return RedirectToAction("Login", "Account");
                 }
                 foreach (var error in result.Errors)
@@ -89,12 +100,12 @@ namespace ASPNETCoreIdentityDemo.Controllers
         private async Task SendConfirmationEmail(string? email, ApplicationUser? user)
         {
             //Generate the Token
-            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user!);
             //Build the Email Confirmation Link which must include the Callback URL
             var ConfirmationLink = Url.Action("ConfirmEmail", "Account",
-            new { UserId = user.Id, Token = token }, protocol: HttpContext.Request.Scheme);
+            new { UserId = user!.Id, Token = token }, protocol: HttpContext.Request.Scheme);
             //Send the Confirmation Email to the User Email Id
-            await _emailSender.SendEmailAsync(email, "Confirm Your Email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(ConfirmationLink)}'>clicking here</a>.", true);
+            await _emailSender.SendEmailAsync(email!, "Confirm Your Email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(ConfirmationLink!)}'>clicking here</a>.", true);
         }
         [HttpGet]
         [AllowAnonymous]
@@ -106,7 +117,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
             }
 
             //Find the User By Id
-            var user = await userManager.FindByIdAsync(UserId);
+            var user = await userManager.FindByIdAsync(UserId!);
             if (user == null)
             {
                 ViewBag.ErrorMessage = $"The User ID {UserId} is Invalid";
@@ -114,7 +125,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
             }
 
             //Call the ConfirmEmailAsync Method which will mark the Email as Confirmed
-            var result = await userManager.ConfirmEmailAsync(user, Token);
+            var result = await userManager.ConfirmEmailAsync(user, Token!);
             if (result.Succeeded)
             {
                 ViewBag.Message = "Thank you for confirming your email";
@@ -129,7 +140,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
         public async Task<IActionResult> Login(string? ReturnUrl = null)
         {
             ViewData["ReturnUrl"] = ReturnUrl;
-            
+
             LoginViewModel model = new LoginViewModel
             {
                 ReturnUrl = ReturnUrl,
@@ -144,13 +155,13 @@ namespace ASPNETCoreIdentityDemo.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await signInManager.PasswordSignInAsync(model.Email!, model.Password!, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    var user = await this.userManager.FindByEmailAsync(model.Email);
+                    var user = await this.userManager.FindByEmailAsync(model.Email!);
                     if (user != null)
                     {
-                        HttpContext.Session.SetString("UserEmail", user.Email);
+                        HttpContext.Session.SetString("UserEmail", user.Email!);
                         HttpContext.Session.SetString("UserId", user.Id);
                         ViewBag.UserEmail = user.Email;
                         ViewBag.FirstName = user.FirstName;
@@ -166,7 +177,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
                         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                         return View(model);
                     }
-                    
+
                 }
             }
             LoginViewModel model1 = new LoginViewModel
@@ -199,7 +210,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
             returnUrl = returnUrl ?? Url.Content("~/");
 
             // Check if the user is already signed in
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity!.IsAuthenticated)
             {
                 // Redirect to the post-login action
                 return RedirectToAction("Login", "Account");
@@ -230,10 +241,10 @@ namespace ASPNETCoreIdentityDemo.Controllers
             if (signInResult.Succeeded)
             {
                 var email = User.Identity.Name;
-                var user = await userManager.FindByEmailAsync(email);
+                var user = await userManager.FindByEmailAsync(email!);
                 // Determine the role of the user
-                ViewBag.roles = await userManager.GetRolesAsync(user);
-                HttpContext.Session.SetString("UserEmail", user.Email);
+                ViewBag.roles = await userManager.GetRolesAsync(user!);
+                HttpContext.Session.SetString("UserEmail", user!.Email!);
                 HttpContext.Session.SetString("UserId", user.Id);
                 ViewBag.UserEmail = user.Email;
                 ViewBag.FirstName = user.FirstName;
@@ -262,10 +273,10 @@ namespace ASPNETCoreIdentityDemo.Controllers
                         {
                             UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
                             Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                            FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                            LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
+                            FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName)!,
+                            LastName = info.Principal.FindFirstValue(ClaimTypes.Surname)!,
                         };
-                        if(user.LastName == null)
+                        if (user.LastName == null)
                         {
                             user.LastName = "";
                         }
@@ -356,7 +367,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
             //First Fetch the User Details
             var user = await userManager.GetUserAsync(User);
             //Then Check whether the User Already has a Password
-            var userHasPassword = await userManager.HasPasswordAsync(user);
+            var userHasPassword = await userManager.HasPasswordAsync(user!);
             //If the user already has a password, redirect to the ChangePassword Action method
             if (userHasPassword)
             {
@@ -379,7 +390,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
                     return View();
                 }
                 //Call the AddPasswordAsync method to set the new password without old password
-                var result = await userManager.AddPasswordAsync(user, model.NewPassword);
+                var result = await userManager.AddPasswordAsync(user, model.NewPassword!);
                 // Handle the failure scenario
                 if (!result.Succeeded)
                 {
@@ -400,6 +411,242 @@ namespace ASPNETCoreIdentityDemo.Controllers
             return View();
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> ConfirmPhoneNumber()
+        {
+            //If the User already provided the Mobile while registering, we need to show that mobile number,
+            //else we need to display empty and allow the user to add or update the mobile number
+            ConfirmPhoneNumberViewModel model1 = new ConfirmPhoneNumberViewModel();
+            var user = await userManager.GetUserAsync(User);
+            if (user!.PhoneNumberConfirmed)
+            {
+                TempData["SuccessMessage"] = "Phone Number Already Confirmed.You can change your number Now";
+                // If not an Admin or SuperAdmin, sign in the user and redirect to Login
+                /* await signInManager.SignInAsync(user, isPersistent: false);*/
+                return RedirectToAction("ChangePhoneNumber", "Account");
+            }
+            else
+            {
+                ConfirmPhoneNumberViewModel model = new ConfirmPhoneNumberViewModel()
+                {
+                    PhoneNumber = user!.PhoneNumber
+                };
+                if (user!.PhoneNumber == null)
+                {
+                    return View(model);
+                }
+                if (user == null)
+                {
+                    return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+                }
+
+                return View(model);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> SendPhoneVerificationCode(ConfirmPhoneNumberViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+                }
+
+                //Generate the Token
+                var token = await userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber!);
+
+                // Code to send the token via SMS 
+                var result = await _SMSSender.SendSmsAsync(model.PhoneNumber!, token);
+
+                if (result)
+                {
+                    // Save or pass the phone number for later verification
+                    TempData["PhoneNumber"] = model.PhoneNumber;
+
+                    // Redirect to verification view
+                    return RedirectToAction("VerifyPhoneNumber", "Account");
+                }
+                else
+                {
+                    ViewBag.ErrorTitle = "Unable to send SMS";
+                    ViewBag.ErrorMessage = "Please try after some time";
+                    return RedirectToAction("Error");
+                }
+            }
+
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult VerifyPhoneNumber()
+        {
+            TempData["PhoneNumber"] = TempData["PhoneNumber"] as string;
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> VerifyPhoneNumber(string Token)
+        {
+            var PhoneNumber = TempData["PhoneNumber"] as string;
+            var user = await userManager.GetUserAsync(User);
+            var result = await userManager.VerifyChangePhoneNumberTokenAsync(user, Token, PhoneNumber!);
+            if (result)
+            {
+                // Update user's PhoneNumber and PhoneNumberConfirmed
+                user!.PhoneNumber = PhoneNumber;
+                user.PhoneNumberConfirmed = true;
+                await userManager.UpdateAsync(user);
+                // Redirect to success page or show success message
+                TempData["SuccessMessage"] = "Your Phone Number Verified Successfully";
+                return RedirectToAction("Index", "DashBoard");
+            }
+            else
+            {
+                // Handle verification failure
+                ViewBag.ErrorTitle = "Verification Failed";
+                ViewBag.ErrorMessage = "Either the Token Expired or you entered an invalid token";
+                return RedirectToAction("Error");
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddPhoneNumber(ConfirmPhoneNumberViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Get the current user
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+                }
+
+                // Update the user's phone number
+                user.PhoneNumber = model.PhoneNumber;
+
+                // Update the user in the database
+                var result = await userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    // Redirect to a confirmation page or take appropriate action
+                    return RedirectToAction("ConfirmPhoneNumber");
+                }
+                else
+                {
+                    // If update fails, add model errors
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+
+            // If ModelState is invalid, return back to the ConfirmPhoneNumber view with errors
+            return View("ConfirmPhoneNumber", model);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult ChangePhoneNumber()
+        {
+            ChangePhoneNumberViewModel model = new ChangePhoneNumberViewModel();
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePhoneNumber(ChangePhoneNumberViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+                }
+
+                user.PhoneNumber = model.NewPhoneNumber;
+                user.PhoneNumberConfirmed = false;
+                var result = await userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    // Redirect to a success page or take appropriate action
+                    TempData["SuccessMessage"] = "Your Phone Number Added.You need to verify it";
+                    return RedirectToAction("ConfirmPhoneNumber", "Account");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            // If ModelState is invalid, return back to the ChangePhoneNumber view with errors
+            return View(model);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult UploadProfilePicture()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> UploadProfilePicture(ProfilePictureViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                if (model.Picture != null)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await model.Picture.CopyToAsync(memoryStream);
+                        user.ProfilePicture = memoryStream.ToArray();
+                    }
+
+                    var result = await userManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        // Profile picture updated successfully
+                        return RedirectToAction("Index", "DashBoard");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("Picture", "Please select a file");
+                }
+            }
+
+            // If we're here, something went wrong
+            return View(model);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -409,3 +656,5 @@ namespace ASPNETCoreIdentityDemo.Controllers
 
     }
 }
+
+

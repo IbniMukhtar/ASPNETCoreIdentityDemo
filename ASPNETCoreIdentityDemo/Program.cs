@@ -35,14 +35,16 @@ namespace ASPNETCoreIdentityDemo
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
+            //Configure SMS service settings
+            builder.Services.AddTransient<ISMSSender, SMSSender>();
             //Configure email service settings
             builder.Services.AddTransient<ISenderEmail, EmailSender>();
 
             //Configure external signIn  settings
             builder.Services.AddAuthentication().AddGoogle(options =>
               {
-                 options.ClientId = builder.Configuration["Google:AppId"];
-                  options.ClientSecret = builder.Configuration["Google:AppSecret"];
+                 options.ClientId = builder.Configuration["Google:AppId"]!;
+                  options.ClientSecret = builder.Configuration["Google:AppSecret"]!;
                   // You can set other options as needed.
               });
 
