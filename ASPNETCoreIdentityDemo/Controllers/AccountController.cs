@@ -8,6 +8,7 @@ using System.Security.Claims;
 using ASPNETCoreIdentityDemo.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Components.Sections;
 
 
 namespace ASPNETCoreIdentityDemo.Controllers
@@ -319,46 +320,84 @@ namespace ASPNETCoreIdentityDemo.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet]
-        public IActionResult ChangePassword()
-        {
-            return View();
-        }
+        /*        [Authorize]
+                [HttpGet]
+                public IActionResult ChangePassword()
+                {
+                    return View();
+                }*/
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        public async Task<IActionResult> _PasswordUpdatePartial(ChangePasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
-                //fetch the User Details
                 var user = await userManager.GetUserAsync(User);
                 if (user == null)
                 {
-                    //If User does not exists, redirect to the Login Page
-                    return RedirectToAction("Login", "Account");
+                    // If User does not exist, return a JSON response indicating failure
+                    return Json(new { success = false, errors = new[] { "User not found. Please log in again." } });
                 }
-                // ChangePasswordAsync Method changes the user password
+
+                // Attempt to change the user's password
                 var result = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-                // The new password did not meet the complexity rules or the current password is incorrect.
-                // Add these errors to the ModelState and rerender ChangePassword view
+
                 if (!result.Succeeded)
                 {
+                    // Password change failed, add errors to ModelState
                     foreach (var error in result.Errors)
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
-                    return View();
+
+                    // Return JSON response with validation errors
+                    return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
                 }
-                // Upon successfully changing the password refresh sign-in cookie
+
+                // Password change successful, refresh sign-in cookie
                 await signInManager.RefreshSignInAsync(user);
-                //Then redirect the user to the ChangePasswordConfirmation view
-                TempData["SuccessMessage"] = "Your password is successfully changed.";
-                return RedirectToAction("Index", "DashBoard");
+
+                // Return JSON response indicating success
+                return Json(new { success = true, message = "Password successfully updated." });
             }
-            return View(model);
+
+            // If ModelState is not valid, return JSON response with validation errors
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
+
+        /* public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+         {
+             if (ModelState.IsValid)
+             {
+                 //fetch the User Details
+                 var user = await userManager.GetUserAsync(User);
+                 if (user == null)
+                 {
+                     //If User does not exists, redirect to the Login Page
+                     return RedirectToAction("Login", "Account");
+                 }
+                 // ChangePasswordAsync Method changes the user password
+                 var result = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                 // The new password did not meet the complexity rules or the current password is incorrect.
+                 // Add these errors to the ModelState and rerender ChangePassword view
+                 if (!result.Succeeded)
+                 {
+                     foreach (var error in result.Errors)
+                     {
+                         ModelState.AddModelError(string.Empty, error.Description);
+                     }
+
+                     return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+                 }
+                 // Upon successfully changing the password refresh sign-in cookie
+                 await signInManager.RefreshSignInAsync(user);
+                 //Then redirect the user to the ChangePasswordConfirmation view
+                 TempData["SuccessMessage"] = "Your password is successfully changed.";
+                 return RedirectToAction("Settings", "Account");
+             }
+             return View(model);
+         }*/
 
         [Authorize]
         [HttpGet]
@@ -647,11 +686,21 @@ namespace ASPNETCoreIdentityDemo.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult ModelPopUp()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+        public IActionResult Settings()
+        {
+            return View();
         }
 
     }

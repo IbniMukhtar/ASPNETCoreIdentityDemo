@@ -34,6 +34,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
 </head>
+<style>
+    .dropleft .dropdown-toggle::before{
+        display:none;
+    }
+
+    .dropdown-toggle::after{
+        display:none;
+    }
+</style>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -93,19 +102,30 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             var user = await UserManager.FindByNameAsync(User.Identity!.Name!);
-
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Manage Account
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                    @* Manage Account *@
+                                    @if (user != null && user.ProfilePicture != null && user.ProfilePicture.Length > 0)
+                                    {
+                                        <img! class="rounded-circle" style="width:35px;" alt="Profile Picture" src="data:image;base64,@Convert.ToBase64String(user.ProfilePicture)" />
+                                    }
+                                    else
+                                    {
+                                        <img class="rounded-circle" style="width:35px;" src="~/Images/demo.png" alt="Profile Picture">
+
+                                    }
+                                </a> 
+                                <div class="dropdown-menu" aria-labelledby="userDropdown" style="margin-left:-96px;">
                                     <a class="dropdown-item" href="#">
                                         <b class="text-success" style="font-size:12px;margin-bottom:0px;">
                                             @User?.Identity?.Name
                                         </b>
                                     </a>
-                                    <a class="dropdown-item" href="#">Settings</a>
+                                    <a class="dropdown-item" href="@Url.Action("Settings", "Account")">Settings</a>
                                     <a class="dropdown-item" href="#">Update</a>
+                                    <a class ="dropdown-item" href="@Url.Action("UploadProfilePicture", "Account")">
+                                        Update DP
+                                    </a>
                                     @if (!string.IsNullOrEmpty(user!.PhoneNumber))
                                     {
                                         @if (user.PhoneNumberConfirmed)
@@ -139,19 +159,6 @@
                                     </form>
                                 </div>
                             </li>
-
-                            <a! href="@Url.Action("UploadProfilePicture", "Account")">
-                                @if (user != null && user.ProfilePicture != null && user.ProfilePicture.Length > 0)
-                                {
-                                    <img! class="rounded-circle" style="width:35px;" alt="Profile Picture" src="data:image;base64,@Convert.ToBase64String(user.ProfilePicture)" />
-                                }
-                                else
-                                {
-                                    <!-- Default profile picture or placeholder image -->
-                                    <img class="rounded-circle" style="width:35px;" src="~/Images/demo.png" alt="Profile Picture">
-
-                                }
-                                </a>
                         }
                         else
                         {
@@ -185,6 +192,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
