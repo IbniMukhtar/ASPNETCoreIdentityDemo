@@ -4,10 +4,10 @@
 @inject UserManager<ApplicationUser> UserManager
 
 @{
-    ApplicationUser user = null!; // Initialize user variable
+    ApplicationUser? user = null!; // Initialize user variable
     if (SignInManager.IsSignedIn(User))
     {
-        user = await UserManager.FindByNameAsync(User.Identity.Name);
+        user = await UserManager.FindByNameAsync(User.Identity!.Name!);
     }
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
@@ -158,10 +158,15 @@
                             <form>
                                 <div class="row">
                                     <div class="col-md-8">
-                                        <div class="form-group">
-                                            <label for="inputUsername">UserName</label>
-                                            <input type="text" class="form-control" id="inputUsername" placeholder="@user!.Email" value="@user!.Email">
-                                        </div>
+                                        <form id="updateUsernameForm">
+                                            <div class="form-group">
+                                                <label for="inputUsername">Username</label>
+                                                <input type="text" class="form-control" id="inputUsername" placeholder="@user!.Email" value="@user!.Email">
+                                            </div>
+                                            <div id="errorMessage" class="text-danger" style="display: none;"></div>
+                                            <div id="successMessage" class="text-success" style="display: none;"></div>
+@*                                             <button type="button" class="btn btn-primary" id="updateUsernameBtn">Update Username</button> *@
+                                        </form>
                                         <div class="form-group">
                                             <label for="inputUsername">Biography</label>
                                             <textarea rows="2" class="form-control" id="inputBio" placeholder="Tell something about yourself"></textarea>
@@ -179,7 +184,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                <button id="updateUsernameBtn" type="submit" class="btn btn-primary">Save changes</button>
                             </form>
                         </div>
                     </div>
@@ -320,6 +325,39 @@
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        $('#updateUsernameBtn').click(function () {
+            // Hide previous error or success messages
+            $('#errorMessage').hide();
+            $('#successMessage').hide();
+
+            // Get the new username from the input field
+            var newUsername = $('#inputUsername').val();
+
+            // AJAX call to update the username
+            $.ajax({
+                url: '/Account/UpdateUsername',
+                type: 'POST',
+                data: { newUsername: newUsername },
+                success: function (response) {
+                    if (response.success) {
+                        // If successful, show success message
+                        $('#successMessage').text(response.message).show();
+                    } else {
+                        // If there are errors, display them to the user
+                        $('#errorMessage').text('Error: ' + response.errors.join(', ')).show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle AJAX call errors
+                    console.error(xhr.responseText);
+                    $('#errorMessage').text('An error occurred while processing your request. Please try again.').show();
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        //function to show and hide model for uploading Dp
         $("#btnShowModal").click(function () {
             $("#loginModal").modal('show');
         });
@@ -328,6 +366,7 @@
             $("#loginModal").modal('hide');
         });
     });
+    //function to display selected file name when updating DP
     function displayFileName(input) {
         // Check if any file is selected
         if (input.files && input.files.length > 0) {

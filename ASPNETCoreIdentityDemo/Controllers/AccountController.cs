@@ -357,9 +357,10 @@ namespace ASPNETCoreIdentityDemo.Controllers
 
                 // Password change successful, refresh sign-in cookie
                 await signInManager.RefreshSignInAsync(user);
-
+                TempData["SuccessMessage"] = "Password successfully updated.";
                 // Return JSON response indicating success
                 return Json(new { success = true, message = "Password successfully updated." });
+               
             }
 
             // If ModelState is not valid, return JSON response with validation errors
@@ -666,7 +667,7 @@ namespace ASPNETCoreIdentityDemo.Controllers
                     if (result.Succeeded)
                     {
                         // Profile picture updated successfully
-                        return RedirectToAction("Index", "DashBoard");
+                        return RedirectToAction("Settings", "Account");
                     }
                     else
                     {
@@ -702,6 +703,51 @@ namespace ASPNETCoreIdentityDemo.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUsername(string newUsername)
+        {
+            // Get the currently signed-in user
+            var user = await userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Check if the new username (email) is already in use
+            var userWithSameEmail = await userManager.FindByEmailAsync(newUsername);
+            if (userWithSameEmail != null && userWithSameEmail.Id != user.Id)
+            {
+                ModelState.AddModelError(string.Empty, "The email is already in use by another user.");
+                return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+            }
+
+            // Update the username (email)
+            user.UserName = newUsername;
+            user.Email = newUsername;
+
+            // Save the changes
+            var result = await userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                // Return errors if updating username fails
+                return Json(new { success = false, errors = result.Errors.Select(e => e.Description) });
+            }
+
+            // If email is already verified or verification is not needed, sign the user out and then back in
+            await signInManager.SignOutAsync();
+            await signInManager.SignInAsync(user, isPersistent: false);
+
+            // Build the Email Confirmation Link
+            await SendConfirmationEmail(user.Email, user);
+
+            // Return the confirmation link
+            return Json(new { success = true, message = "A verification email has been sent to your email address. Please verify it to continue using our services." });
+        }
+
+
 
     }
 }

@@ -45,7 +45,7 @@
 </style>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 p-0 sticky-top">
             <div class="container-fluid">
                 @if (SignInManager.IsSignedIn(User))
                 {
@@ -102,6 +102,7 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             var user = await UserManager.FindByNameAsync(User.Identity!.Name!);
+                            <li class="nav-link text-primary"><strong>@User.Identity!.Name!</strong></li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     @* Manage Account *@
@@ -114,8 +115,8 @@
                                         <img class="rounded-circle" style="width:35px;" src="~/Images/demo.png" alt="Profile Picture">
 
                                     }
-                                </a> 
-                                <div class="dropdown-menu" aria-labelledby="userDropdown" style="margin-left:-96px;">
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     <a class="dropdown-item" href="#">
                                         <b class="text-success" style="font-size:12px;margin-bottom:0px;">
                                             @User?.Identity?.Name
@@ -123,7 +124,7 @@
                                     </a>
                                     <a class="dropdown-item" href="@Url.Action("Settings", "Account")">Settings</a>
                                     <a class="dropdown-item" href="#">Update</a>
-                                    <a class ="dropdown-item" href="@Url.Action("UploadProfilePicture", "Account")">
+                                    <a class="dropdown-item" href="@Url.Action("UploadProfilePicture", "Account")">
                                         Update DP
                                     </a>
                                     @if (!string.IsNullOrEmpty(user!.PhoneNumber))
@@ -134,7 +135,7 @@
                                         }
                                         else
                                         {
-                                            <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ConfirmPhoneNumber">Change Phone No</a>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ConfirmPhoneNumber">Confirm Phone No</a>
                                         }
                                     }
                                     else
@@ -144,7 +145,7 @@
                                     @if (User!.Identity.IsAuthenticated)
                                     {
                                         @* var user = await UserManager.FindByNameAsync(User.Identity.Name!); *@
-                                        if (user != null && await UserManager.HasPasswordAsync(user))
+                                        @if (user != null && await UserManager.HasPasswordAsync(user))
                                         {
                                             <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Change Password</a>
                                         }
@@ -153,12 +154,13 @@
                                             <a class="dropdown-item" asp-controller="Account" asp-action="AddPassword">Add Password</a>
                                         }
                                     }
-                                    <div class="dropdown-divider"></div>
+                                    <div class="dropdown-divider"></div> <!-- Hide divider on screens larger than lg -->
                                     <form method="post" asp-controller="account" asp-action="logout">
                                         <button type="submit" class="dropdown-item">Logout</button>
                                     </form>
                                 </div>
                             </li>
+
                         }
                         else
                         {
