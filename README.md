@@ -10,7 +10,7 @@ Dynamic DashBoards for USER, Admin And SuperAdmin and many other features
 
 <!-- Row 1 -->
 <div align="center">
-    <img src="~\Images\pimg1.png" width="200" />
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg1.png" width="200" />
     <img src="~\Images\pimg2.png" width="200" />
     <img src="~\Images\pimg3.png" width="200" />
     <img src="~\mages\pimg4.png" width="200" />
