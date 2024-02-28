@@ -10,25 +10,31 @@ Dynamic DashBoards for USER, Admin And SuperAdmin and many other features
 
 <!-- Row 1 -->
 <div align="center">
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg1.png" width="200" />
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg2.png" width="200" />
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg3.png" width="200" />
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg4.png" width="200" />
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg4.png" />
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg2.png" />
+
+
 </div>       
 <!-- Row 2 -->
 <div align="center">
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg5.png" width="200" />
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg6.png" width="200" />
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg7.png" width="200" />
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg8.png" width="200" />
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg3.png" />
 </div>
-
 <!-- Row 3 -->
 <div align="center">
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg9.png" width="200" />
-    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg10.png" width="200" />
-    <!-- Add more images as needed -->
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg5.png" />
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg6.png"  />
 </div>
+<!-- Row 4 -->
+<div align="center">
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg7.png"  />
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg8.png"  />
+</div>
+<!-- Row 5 -->
+<div align="center">
+    <img src="ASPNETCoreIdentityDemo\wwwroot\Images\pimg9.png"  />
+</div>
+
+
 
 ## Installation
 
